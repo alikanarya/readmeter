@@ -25,11 +25,22 @@ void netOps::downloadFinished(QNetworkReply *reply) {
     } else {
         //cout << " ok " << endl;
         //QByteArray content= reply->readAll();
-        //QString DataAsString = QTextCodec::codecForMib(106)->toUnicode(content);
-        //cout << DataAsString.constData();
         //cout << QString(content).toUtf8().constData();
-        cout <<   reply->bytesAvailable();//reply->readAll().toStdString() << reply->isFinished();
-        ///manager.disconnect();
-        reply->deleteLater();
+        //cout << reply->bytesAvailable();
+        //cout << reply->readAll().toStdString() << reply->isFinished();
+
+        QByteArray datagram; datagram.clear();
+        //while (client->waitForReadyRead(300)) {
+        //cout << reply->bytesAvailable() << "--";
+        while (reply->bytesAvailable() > 0) {
+            datagram.append(reply->readAll());
+            //cout << " ok " << endl;
+        }
+        cout << " data: " << QString::fromUtf8(datagram).toUtf8().constData() << endl;
+        cout << " ok " << endl;
+        //cout << " size: " << QString::number(datagram.size()).toUtf8().constData();
+        printf(" size : ");//%u", datagram.size());
+        //manager.disconnect();
+        //reply->deleteLater();
     }
 }
