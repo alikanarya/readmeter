@@ -28,8 +28,8 @@ void netOps::downloadFinished(QNetworkReply *reply) {
         //QString DataAsString = QTextCodec::codecForMib(106)->toUnicode(content);
         //cout << DataAsString.constData();
         //cout << QString(content).toUtf8().constData();
-        cout <<  reply->readAll().toStdString() << reply->isFinished();
-        manager.disconnect();
+        cout <<   reply->bytesAvailable();//reply->readAll().toStdString() << reply->isFinished();
+        ///manager.disconnect();
         reply->deleteLater();
     }
 }
