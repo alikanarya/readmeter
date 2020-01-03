@@ -5,9 +5,9 @@
 
 using namespace std;
 
-QString hostName = "1ocalhost";
+QString hostName = "localhost";
 QString dbName = "homeAutoDB";
-QString dbUser = "root";
+QString dbUser = "ali";
 QString dbPass = "reyhan";
 bool firstRun = true;
 
