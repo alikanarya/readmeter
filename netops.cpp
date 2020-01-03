@@ -37,9 +37,9 @@ void netOps::downloadFinished(QNetworkReply *reply) {
             //cout << " ok " << endl;
         }
         cout << " data: " << QString::fromUtf8(datagram).toUtf8().constData() << endl;
-        cout << " ok " << endl;
+        printf(" size : %u", datagram.size());
+        cout << endl;
         //cout << " size: " << QString::number(datagram.size()).toUtf8().constData();
-        printf(" size : ");//%u", datagram.size());
         //manager.disconnect();
         //reply->deleteLater();
     }
