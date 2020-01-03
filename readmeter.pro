@@ -1,6 +1,7 @@
 QT += core
 #QT -= gui
 QT += network
+QT += sql
 
 CONFIG += c++11
 
@@ -16,7 +17,9 @@ CONFIG -= app_bundle
 TEMPLATE = app
 
 SOURCES += main.cpp \
-    netops.cpp
+    netops.cpp \
+    datathread.cpp
 
 HEADERS += \
-    netops.h
+    netops.h \
+    datathread.h
