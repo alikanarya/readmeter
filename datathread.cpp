@@ -54,6 +54,8 @@ void dataThread::connectToDB(){
     } else {
 
         qDebug() <<  "db connection established";
+        dbConnectionOK = true;
+        emit dbConnected();
 /*
         QSqlQuery qry;
         QString cmd;
@@ -118,7 +120,7 @@ void dataThread::recordData(){
     //cout << gpioX->aInpArr[0] << " " << gpioX->aInpArr[1] << " " << gpioDS18B20X->sensor1val;
 
     cout << endl;
-
+/*
     if (dbRecordEnable && db.open()) {
 
         QSqlQuery qry;
@@ -129,7 +131,7 @@ void dataThread::recordData(){
         //qDebug() << cmd.toUtf8().constData();
 
         qry.prepare( cmd );
-/*
+
         if( !qry.exec() )
           qDebug() << qry.lastError();
 
@@ -148,9 +150,9 @@ void dataThread::recordData(){
             }
         }
 
-*/
-    }
 
+    }
+*/
     firstRun = false;
 }
 

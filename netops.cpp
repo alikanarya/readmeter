@@ -18,29 +18,61 @@ void netOps::makeRequest(unsigned int id) {
     manager.get(request);
 }
 
+void netOps::captureImage(bool wFlash) {
+
+   if (wFlash) url.setUrl(urlCapWithFlash);
+   else url.setUrl(urlCapWithOutFlash);
+
+   QNetworkRequest request(url);
+   manager.get(request);
+
+}
+
 void netOps::downloadFinished(QNetworkReply *reply) {
 
     if (reply->error()) {
         cout << " downloadFinished() " << reply->errorString().constData() << endl;
     } else {
-        //cout << " ok " << endl;
-        //QByteArray content= reply->readAll();
-        //cout << QString(content).toUtf8().constData();
-        //cout << reply->bytesAvailable();
-        //cout << reply->readAll().toStdString() << reply->isFinished();
+
 
         QByteArray datagram; datagram.clear();
         //while (client->waitForReadyRead(300)) {
         //cout << reply->bytesAvailable() << "--";
         while (reply->bytesAvailable() > 0) {
             datagram.append(reply->readAll());
-            //cout << " ok " << endl;
+            cout << " ok " << endl;
         }
-        cout << " data: " << QString::fromUtf8(datagram).toUtf8().constData() << endl;
+        //cout << " data: " << QString::fromUtf8(datagram).toUtf8().constData() << endl;
         printf(" size : %u", datagram.size());
         cout << endl;
-        //cout << " size: " << QString::number(datagram.size()).toUtf8().constData();
         //manager.disconnect();
         //reply->deleteLater();
+
+        QImage *temp = new QImage;
+        temp->loadFromData(datagram);
+/*
+        while (reply->bytesAvailable() > 0) {
+            temp->loadFromData(reply->readAll());
+            cout << " ok " << endl;
+        }
+        */
+        //temp->save("test.jpg");
+        //cout << endl;
+        //QImage image;
+        /*
+        QByteArray ba;
+        QBuffer buffer(&ba);
+        buffer.open(QIODevice::WriteOnly);
+        temp->save(&buffer, "JPG"); // writes image into ba in PNG format
+        */
+
+        QImageWriter writer("test.jpeg");
+        writer.write(*temp);
+        if(writer.canWrite())
+            qDebug("i can write");
+        else
+            qDebug("i can't write");
+        cout << writer.errorString().toUtf8().constData() << endl;
+        //cout << QImageWriter::supportedImageFormats() << endl;
     }
 }

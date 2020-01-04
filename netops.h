@@ -11,8 +11,12 @@
 #include <QString>
 #include <QByteArray>
 #include <QTextCodec>
+#include <QImageWriter>
 
 using namespace std;
+
+extern QString urlCapWithFlash;
+extern QString urlCapWithOutFlash;
 
 class netOps : public QObject
 {
@@ -21,10 +25,12 @@ class netOps : public QObject
 
 public:
     QUrl url;
+
     explicit netOps(QObject *parent = 0);
     netOps(QString _url);
     ~netOps();
     void makeRequest(unsigned int id);
+    void captureImage(bool wFlash = true);
 
 signals:
 

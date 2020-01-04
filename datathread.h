@@ -30,6 +30,7 @@ public:
     void stop();
 
     bool dbRecordEnable = false;
+    bool dbConnectionOK = false;
     QSqlDatabase db = QSqlDatabase::addDatabase("QMYSQL");
     QString tableNames[13] = {"zones", "oto", "sln", "blk", "mut", "eyo", "cyo", "yod", "tempout", "boiler_status", "ot_status", "boiler_temp", "boiler_settemp"};
 
@@ -51,7 +52,7 @@ private:
     volatile bool stopped;
 
 signals:
-
+    void dbConnected();
 
 };
 #endif // DATATHREAD_H
