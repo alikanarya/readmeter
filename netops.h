@@ -1,6 +1,8 @@
 #ifndef NETOPS_H
 #define NETOPS_H
 
+#define RequestID   "RequestID"
+
 #include <QObject>
 #include <QNetworkAccessManager>
 #include <QNetworkRequest>
@@ -17,6 +19,9 @@ using namespace std;
 
 extern QString urlCapWithFlash;
 extern QString urlCapWithOutFlash;
+extern QString RequestUrl[];
+extern QString webDir;
+extern QString webUrl;
 
 class netOps : public QObject
 {
@@ -30,7 +35,6 @@ public:
     netOps(QString _url);
     ~netOps();
     void makeRequest(unsigned int id);
-    void captureImage(bool wFlash = true);
 
 signals:
 
