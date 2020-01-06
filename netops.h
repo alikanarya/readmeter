@@ -14,6 +14,7 @@
 #include <QByteArray>
 #include <QTextCodec>
 #include <QImageWriter>
+#include <QDir>
 
 using namespace std;
 
@@ -22,6 +23,9 @@ extern QString urlCapWithOutFlash;
 extern QString RequestUrl[];
 extern QString webDir;
 extern QString webUrl;
+extern char dirName[];
+extern char dirNameF[];
+extern char fileName[];
 
 class netOps : public QObject
 {

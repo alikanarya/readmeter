@@ -15,6 +15,9 @@ int timeDiff = 0, timeTotal = 0;
 char line[MAX];
 char dateInfo[MAX];
 char timeInfo[MAX];
+char dirName[MAX];
+char dirNameF[MAX];
+char fileName[MAX];
 
 void timeString(){
     sprintf (line, "%02d/%02d/%02d, %02d:%02d:%02d, ", 	currentTimeInfo->tm_mday,
@@ -25,6 +28,9 @@ void timeString(){
                                                 currentTimeInfo->tm_sec);
     sprintf (dateInfo, "%02d/%02d/%02d", currentTimeInfo->tm_mday, (currentTimeInfo->tm_mon+1), (currentTimeInfo->tm_year-100));
     sprintf (timeInfo, "%02d:%02d:%02d", currentTimeInfo->tm_hour, currentTimeInfo->tm_min, currentTimeInfo->tm_sec);
+    sprintf (dirName, "%04d%02d%02d", (currentTimeInfo->tm_year+1900), (currentTimeInfo->tm_mon+1), currentTimeInfo->tm_mday);
+    sprintf (dirNameF, "/root/app/%04d%02d%02d", (currentTimeInfo->tm_year+1900), (currentTimeInfo->tm_mon+1), currentTimeInfo->tm_mday);
+    sprintf (fileName, "%s/%s_%02d%02d%02d", dirNameF, dirName, currentTimeInfo->tm_hour, currentTimeInfo->tm_min, currentTimeInfo->tm_sec);
 }
 
 dataThread::dataThread(){
@@ -115,11 +121,11 @@ void dataThread::recordData(){
     timeString();
 
     //cout << line;
-    cout << dateInfo << " " << timeInfo << "  ";
+    cout << dateInfo << " " << timeInfo << endl;
+    cout << dirName << " " << fileName << endl;
 
     //cout << gpioX->aInpArr[0] << " " << gpioX->aInpArr[1] << " " << gpioDS18B20X->sensor1val;
 
-    cout << endl;
 /*
     if (dbRecordEnable && db.open()) {
 

@@ -39,12 +39,12 @@ int main(int argc, char *argv[]) {
 
     if (argc == 1){
 
-        requestMode = 0;
+        requestMode = 5;//0;
 
     } else if (argc == 2){
 
         if ( std::string(argv[1]) == "-qws" )
-            requestMode = 0;
+            requestMode = 5;//0;
         else {
             QString argument = QString::fromStdString(std::string(argv[1]));
             bool ok = false;
@@ -67,6 +67,7 @@ int main(int argc, char *argv[]) {
     dataThread *dataX = new dataThread();
     dataX->dbRecordEnable = true;
     dataX->connectToDB();
+    dataX->recordData();
 
 //    netOps _net("http://192.168.2.11:3000/wasserzaehler.html?url=http://192.168.2.10/meter/capture.jpg&single");
 //    netOps _net("http://192.168.2.11:3000/wasserzaehler.html?url=http://192.168.2.10/meter/meter0.jpg&single");
