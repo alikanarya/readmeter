@@ -32,6 +32,12 @@ QString webDir = "/var/www/html/";
 QString webUrl = "http://192.168.2.46:8080/";
 int requestMode = 0;
 
+QString ipDockerHost = "192.168.2.11";
+QString ipCamNg = "192.168.2.49";
+bool dockerHostLive = false;
+bool camNgLive = false;
+bool dockerRunning = false;
+
 int main(int argc, char *argv[]) {
 
     QCoreApplication a(argc, argv);
@@ -60,19 +66,24 @@ int main(int argc, char *argv[]) {
                 cout << RequestUrl[requestMode].toUtf8().constData() << endl;
             }
         }
-
     };
-
 
     dataThread *dataX = new dataThread();
     dataX->dbRecordEnable = true;
     dataX->connectToDB();
     dataX->recordData();
 
-//    netOps _net("http://192.168.2.11:3000/wasserzaehler.html?url=http://192.168.2.10/meter/capture.jpg&single");
-//    netOps _net("http://192.168.2.11:3000/wasserzaehler.html?url=http://192.168.2.10/meter/meter0.jpg&single");
-    netOps _net("http://192.168.2.10/meter/meter0.jpg");
-    _net.makeRequest(requestMode);
+    netOps _net("");
+    std::cout << std::boolalpha;
+    dockerHostLive = _net.checkHost(ipDockerHost);
+    camNgLive = _net.checkHost(ipCamNg);
+    cout << "DockerHost: " << dockerHostLive << "\n";
+    cout << "CamNg: " << camNgLive << "\n";
+
+    if (true) //(camNgLive)
+        _net.makeRequest(requestMode);
+    else
+        return 0;
 
     return a.exec();
 }

@@ -14,6 +14,7 @@ netOps::netOps (QString _url) {
 netOps::~netOps() { cout << " done " << endl; }
 
 void netOps::makeRequest(unsigned int id) {
+    requestMode = id;
     url.setUrl(RequestUrl[id]);
     QNetworkRequest request(url);
     request.setRawHeader("RequestID", QString::number(id).toUtf8());
@@ -24,33 +25,42 @@ void netOps::downloadFinished(QNetworkReply *reply) {
 
     if (reply->error()) {
         cout << " Error: downloadFinished() " << reply->errorString().constData() << endl;
+        if (requestMode==2 || requestMode==3 || requestMode==4 || requestMode==6) {
+            dockerRunning = false;
+            cout << "Docker: " << dockerRunning << "\n";
+            qApp->quit();
+        }
     } else {
 
         QByteArray datagram; datagram.clear();
         while (reply->bytesAvailable() > 0) {
             datagram.append(reply->readAll());
-            cout << " ok " << endl;
         }
         int datagramSize = datagram.size();
         printf("Datagram size : %u", datagramSize); cout << endl;
         int _requestMode = reply->request().rawHeader(RequestID).toInt();
-        cout << reply->request().rawHeader(RequestID).constData() << endl;
+        //cout << reply->request().rawHeader(RequestID).constData() << endl;
 
         if (_requestMode==0 || _requestMode==1 || _requestMode==5) {
             QImage *temp = new QImage;
             temp->loadFromData(datagram);
             if (temp->save(webDir + "ngmeter.jpeg")) {
-                //makeRequest(2);
-                //makeRequest(6);
                 QDir().mkdir(dirName1);
                 QDir().mkdir(dirName2);
                 QDir().mkdir(dirNameF);
                 temp->save(QString(fileName));
+
+                if (dockerHostLive) {
+                    requestMode = 6;    //2
+                    makeRequest(requestMode);
+                }
             }
 
         } else {
             cout << " data: " << QString::fromUtf8(datagram).toUtf8().constData() << endl;
-
+            dockerRunning = true;
+            cout << "Docker: " << dockerRunning << "\n";
+            qApp->quit();
         }
 
 
@@ -70,3 +80,17 @@ void netOps::downloadFinished(QNetworkReply *reply) {
         reply->deleteLater();
     }
 }
+
+bool netOps::checkHost(QString ip){
+    QProcess pingProcess;
+    QString exec = "ping";
+    QStringList params;
+    params << "-c" << "1" << ip;
+    pingProcess.start(exec,params,QIODevice::ReadOnly);
+    pingProcess.waitForFinished(-1);
+
+    QString p_stdout = pingProcess.readAllStandardOutput();
+    //QString p_stderr = pingProcess.readAllStandardError();
+    return (!p_stdout.contains("errors", Qt::CaseInsensitive));
+}
+

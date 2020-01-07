@@ -15,6 +15,7 @@
 #include <QTextCodec>
 #include <QImageWriter>
 #include <QDir>
+#include <QProcess>
 
 using namespace std;
 
@@ -28,6 +29,9 @@ extern char dirName1[];
 extern char dirName2[];
 extern char dirNameF[];
 extern char fileName[];
+extern bool dockerHostLive;
+extern bool camNgLive;
+extern bool dockerRunning;
 
 class netOps : public QObject
 {
@@ -36,11 +40,13 @@ class netOps : public QObject
 
 public:
     QUrl url;
+    int requestMode = 0;
 
     explicit netOps(QObject *parent = 0);
     netOps(QString _url);
     ~netOps();
     void makeRequest(unsigned int id);
+    bool checkHost(QString ip);
 
 signals:
 
