@@ -42,8 +42,10 @@ void netOps::downloadFinished(QNetworkReply *reply) {
             if (temp->save(webDir + "ngmeter.jpeg")) {
                 //makeRequest(2);
                 //makeRequest(6);
+                QDir().mkdir(dirName1);
+                QDir().mkdir(dirName2);
                 QDir().mkdir(dirNameF);
-                cout << temp->save(QString(fileName)) << endl;
+                temp->save(QString(fileName));
             }
 
         } else {

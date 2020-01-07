@@ -24,6 +24,8 @@ extern QString RequestUrl[];
 extern QString webDir;
 extern QString webUrl;
 extern char dirName[];
+extern char dirName1[];
+extern char dirName2[];
 extern char dirNameF[];
 extern char fileName[];
 
