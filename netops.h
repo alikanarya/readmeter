@@ -32,6 +32,7 @@ extern char fileName[];
 extern bool dockerHostLive;
 extern bool camNgLive;
 extern bool dockerRunning;
+extern bool localWebServerRunning;
 
 class netOps : public QObject
 {

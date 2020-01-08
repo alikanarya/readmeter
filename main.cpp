@@ -18,15 +18,16 @@ QString dbName = "homeAutoDB";
 QString dbUser = "ali";
 QString dbPass = "reyhan";
 bool firstRun = true;
-const int RequestUrlSize = 7;
-QString RequestUrl[7] = {
+const int RequestUrlSize = 8;
+QString RequestUrl[8] = {
     /*0*/   "http://192.168.2.49/capture_with_flashlight",
     /*1*/   "http://192.168.2.49/capture",
     /*2*/   "http://192.168.2.11:3000/wasserzaehler.html?url=http://192.168.2.46:8080/ngmeter.jpeg&single",
     /*3*/   "http://192.168.2.11:3000/wasserzaehler.html?url=http://192.168.2.49/capture_with_flashlight&single",
     /*4*/   "http://192.168.2.11:3000/wasserzaehler.html?url=http://192.168.2.49/capture&single",
     /*5*/   "http://192.168.2.10/meter/capture.jpg",
-    /*6*/   "http://192.168.2.11:3000/wasserzaehler.html?url=http://192.168.2.10/meter/capture.jpg&single"
+    /*6*/   "http://192.168.2.11:3000/wasserzaehler.html?url=http://192.168.2.10/meter/capture.jpg&single",
+    /*7*/   "http://192.168.2.46"
     };
 QString webDir = "/var/www/html/";
 QString webUrl = "http://192.168.2.46:8080/";
@@ -37,6 +38,7 @@ QString ipCamNg = "192.168.2.49";
 bool dockerHostLive = false;
 bool camNgLive = false;
 bool dockerRunning = false;
+bool localWebServerRunning = false;
 
 int main(int argc, char *argv[]) {
 
@@ -75,6 +77,10 @@ int main(int argc, char *argv[]) {
 
     netOps _net("");
     std::cout << std::boolalpha;
+
+    _net.makeRequest(7);    //check local web server is runnning
+    cout << "WebServer: " << localWebServerRunning << "\n";
+
     dockerHostLive = _net.checkHost(ipDockerHost);
     camNgLive = _net.checkHost(ipCamNg);
     cout << "DockerHost: " << dockerHostLive << "\n";

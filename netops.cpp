@@ -30,6 +30,9 @@ void netOps::downloadFinished(QNetworkReply *reply) {
             cout << "Docker: " << dockerRunning << "\n";
             qApp->quit();
         }
+        if (requestMode==7) {
+             localWebServerRunning = false;
+        }
     } else {
 
         QByteArray datagram; datagram.clear();
@@ -56,6 +59,8 @@ void netOps::downloadFinished(QNetworkReply *reply) {
                 }
             }
 
+        } else if (_requestMode==7){
+            localWebServerRunning = true;
         } else {
             cout << " data: " << QString::fromUtf8(datagram).toUtf8().constData() << endl;
             dockerRunning = true;
