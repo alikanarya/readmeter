@@ -20,6 +20,7 @@ char dirName1[MAX];
 char dirName2[MAX];
 char dirNameF[MAX];
 char fileName[MAX];
+char fileNameBare[MAX];
 
 void timeString(){
     sprintf (line, "%02d/%02d/%02d, %02d:%02d:%02d, ", 	currentTimeInfo->tm_mday,
@@ -36,6 +37,7 @@ void timeString(){
     sprintf (dirName2, "/root/ngmeter-data/%04d-%02d", (currentTimeInfo->tm_year+1900), (currentTimeInfo->tm_mon+1));
     sprintf (dirNameF, "/root/ngmeter-data/%04d-%02d/%02d", (currentTimeInfo->tm_year+1900), (currentTimeInfo->tm_mon+1), currentTimeInfo->tm_mday);
     sprintf (fileName, "%s/%s_%02d%02d%02d.jpeg", dirNameF, dirName, currentTimeInfo->tm_hour, currentTimeInfo->tm_min, currentTimeInfo->tm_sec);
+    sprintf (fileNameBare, "%s_%02d%02d%02d.jpeg", dirName, currentTimeInfo->tm_hour, currentTimeInfo->tm_min, currentTimeInfo->tm_sec);
 }
 
 dataThread::dataThread(){
@@ -44,6 +46,22 @@ dataThread::dataThread(){
     currentTimeInfo = localtime (&currentTime);
     firstTime = prevTime = currentTime;
     timeString();
+
+    if ( !fileExists( logFileName.toUtf8().constData() ) ){
+
+        logFile.open( logFileName.toUtf8().constData(), ios::out | ios::app );
+
+        if (logFile.is_open()){
+            logFile << line << "app started" << endl;
+        }
+    } else {
+
+        logFile.open( logFileName.toUtf8().constData(), ios::out | ios::app );
+
+        /*if (logFile.is_open()){
+            logFile << fileSeperators[i].toUtf8().constData() << endl;
+        }*/
+    }
 
 }
 
@@ -99,6 +117,19 @@ void dataThread::connectToDB(){
     }
 }
 
+void dataThread::append2Log(QString str){
+    if (logFile.is_open()){
+        logFile << str.toUtf8().constData() << endl;
+    }
+}
+
+void dataThread::closeLogFile(){
+    if (logFile.is_open()){
+        logFile.close();
+    }
+
+}
+
 void dataThread::run(){
 
     //if (!stopped){    }
@@ -126,8 +157,8 @@ void dataThread::recordData(){
     timeString();
 
     //cout << line;
-    cout << dateInfo << " " << timeInfo << endl;
-    cout << dirName << " " << fileName << endl;
+    qDebug() << dateInfo << " " << timeInfo << endl;
+    qDebug() << dirName << " " << fileName << endl;
 
     //cout << gpioX->aInpArr[0] << " " << gpioX->aInpArr[1] << " " << gpioDS18B20X->sensor1val;
 

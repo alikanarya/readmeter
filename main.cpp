@@ -4,6 +4,7 @@
  * it will put libqjpeg.so to
  * qt-everywhere-opensource-src-5.7.0/qtbase/plugins/imageformats/ in host and
  * /usr/local/qt-armhf/plugins/imageformats/ in BBB
+ *
  */
 
 #include <QCoreApplication>
@@ -17,20 +18,21 @@ QString hostName = "localhost";
 QString dbName = "homeAutoDB";
 QString dbUser = "ali";
 QString dbPass = "reyhan";
+dataThread *dataX;
 bool firstRun = true;
 const int RequestUrlSize = 8;
 QString RequestUrl[8] = {
     /*0*/   "http://192.168.2.49/capture_with_flashlight",
     /*1*/   "http://192.168.2.49/capture",
-    /*2*/   "http://192.168.2.11:3000/wasserzaehler.html?url=http://192.168.2.46:8080/ngmeter.jpeg&single",
+    /*2*/   "http://192.168.2.11:3000/wasserzaehler.html?url=http://192.168.2.48:8080/ngmeter.jpeg&single",
     /*3*/   "http://192.168.2.11:3000/wasserzaehler.html?url=http://192.168.2.49/capture_with_flashlight&single",
     /*4*/   "http://192.168.2.11:3000/wasserzaehler.html?url=http://192.168.2.49/capture&single",
     /*5*/   "http://192.168.2.10/meter/capture.jpg",
     /*6*/   "http://192.168.2.11:3000/wasserzaehler.html?url=http://192.168.2.10/meter/capture.jpg&single",
-    /*7*/   "http://192.168.2.46"
+    /*7*/   "http://192.168.2.48"
     };
 QString webDir = "/var/www/html/";
-QString webUrl = "http://192.168.2.46:8080/";
+QString webUrl = "http://192.168.2.48:8080/";
 int requestMode = 0;
 
 QString ipDockerHost = "192.168.2.11";
@@ -47,12 +49,12 @@ int main(int argc, char *argv[]) {
 
     if (argc == 1){
 
-        requestMode = 5;//0;
+        requestMode = 0;//5
 
     } else if (argc == 2){
 
         if ( std::string(argv[1]) == "-qws" )
-            requestMode = 5;//0;
+            requestMode = 0;//5;
         else {
             QString argument = QString::fromStdString(std::string(argv[1]));
             bool ok = false;
@@ -70,23 +72,26 @@ int main(int argc, char *argv[]) {
         }
     };
 
-    dataThread *dataX = new dataThread();
-    dataX->dbRecordEnable = true;
-    dataX->connectToDB();
+    dataX = new dataThread();
+    dataX->dbRecordEnable = false;
+    if (dataX->dbRecordEnable)
+        dataX->connectToDB();
     dataX->recordData();
 
     netOps _net("");
     std::cout << std::boolalpha;
+    //dockerHostLive = _net.checkHost(ipDockerHost);
+    //cout << "DockerHost: " << dockerHostLive << "\n";
 
-    _net.makeRequest(7);    //check local web server is runnning
-    cout << "WebServer: " << localWebServerRunning << "\n";
+    //_net.makeRequest(7);    //check local web server is runnning
+    //cout << "WebServer: " << localWebServerRunning << "\n";
 
-    dockerHostLive = _net.checkHost(ipDockerHost);
     camNgLive = _net.checkHost(ipCamNg);
-    cout << "DockerHost: " << dockerHostLive << "\n";
-    cout << "CamNg: " << camNgLive << "\n";
+    //cout << "CamNg: " << camNgLive << "\n";
+    if (!camNgLive)
+        dataX->append2Log("Camera Ng is offline ");
 
-    if (true) //(camNgLive)
+    if (camNgLive)
         _net.makeRequest(requestMode);
     else
         return 0;

@@ -11,7 +11,7 @@ netOps::netOps (QString _url) {
     connect(&manager, SIGNAL(finished(QNetworkReply*)),this,SLOT(downloadFinished(QNetworkReply*)));
 }
 
-netOps::~netOps() { cout << " done " << endl; }
+netOps::~netOps() { qDebug() << " done " << endl; }
 
 void netOps::makeRequest(unsigned int id) {
     requestMode = id;
@@ -28,6 +28,7 @@ void netOps::downloadFinished(QNetworkReply *reply) {
         if (requestMode==2 || requestMode==3 || requestMode==4 || requestMode==6) {
             dockerRunning = false;
             cout << "Docker: " << dockerRunning << "\n";
+            dataX->closeLogFile();
             qApp->quit();
         }
         if (requestMode==7) {
@@ -40,23 +41,32 @@ void netOps::downloadFinished(QNetworkReply *reply) {
             datagram.append(reply->readAll());
         }
         int datagramSize = datagram.size();
-        printf("Datagram size : %u", datagramSize); cout << endl;
+        //printf("Datagram size : %u", datagramSize); cout << endl;
         int _requestMode = reply->request().rawHeader(RequestID).toInt();
         //cout << reply->request().rawHeader(RequestID).constData() << endl;
 
         if (_requestMode==0 || _requestMode==1 || _requestMode==5) {
             QImage *temp = new QImage;
             temp->loadFromData(datagram);
-            if (temp->save(webDir + "ngmeter.jpeg")) {
-                QDir().mkdir(dirName1);
-                QDir().mkdir(dirName2);
-                QDir().mkdir(dirNameF);
-                temp->save(QString(fileName));
 
+            QDir().mkdir(dirName1);
+            QDir().mkdir(dirName2);
+            QDir().mkdir(dirNameF);
+            if (temp->save(QString(fileName))){
+                dataX->append2Log(QString(fileNameBare) + " saved");
+            }
+
+            if (temp->save(webDir + "ngmeter.jpeg")) {
                 if (dockerHostLive) {
-                    requestMode = 6;    //2
+                    requestMode = 2;    //6;
                     makeRequest(requestMode);
+                } else {
+                    dataX->closeLogFile();
+                    qApp->quit();
                 }
+            } else {
+                dataX->closeLogFile();
+                qApp->quit();
             }
 
         } else if (_requestMode==7){
@@ -65,6 +75,7 @@ void netOps::downloadFinished(QNetworkReply *reply) {
             cout << " data: " << QString::fromUtf8(datagram).toUtf8().constData() << endl;
             dockerRunning = true;
             cout << "Docker: " << dockerRunning << "\n";
+            dataX->closeLogFile();
             qApp->quit();
         }
 

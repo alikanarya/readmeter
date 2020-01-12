@@ -16,8 +16,11 @@
 #include <QImageWriter>
 #include <QDir>
 #include <QProcess>
+#include "datathread.h"
 
 using namespace std;
+
+extern dataThread *dataX;
 
 extern QString urlCapWithFlash;
 extern QString urlCapWithOutFlash;
@@ -29,6 +32,7 @@ extern char dirName1[];
 extern char dirName2[];
 extern char dirNameF[];
 extern char fileName[];
+extern char fileNameBare[];
 extern bool dockerHostLive;
 extern bool camNgLive;
 extern bool dockerRunning;

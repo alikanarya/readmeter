@@ -12,6 +12,7 @@
 #include <QtSql/QSqlError>
 #include <QtSql/QSqlQuery>
 #include <QDebug>
+#include <fstream>
 
 using namespace std;
 
@@ -22,13 +23,26 @@ class dataThread: public QThread{
 
 public:
 
+    inline bool fileExists (const std::string& name) {
+        if (FILE *file = fopen(name.c_str(), "r")) {
+            fclose(file);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     dataThread();
     void connectToDB();
+    void append2Log(QString str);
+    void closeLogFile();
 
     ~dataThread();
 
     void stop();
 
+    ofstream logFile;
+    QString logFileName = "./readmeter.log";
     bool dbRecordEnable = false;
     bool dbConnectionOK = false;
     QSqlDatabase db = QSqlDatabase::addDatabase("QMYSQL");
