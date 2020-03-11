@@ -36,6 +36,7 @@ public:
     void connectToDB();
     void append2Log(QString str);
     void closeLogFile();
+    void insertToDB(QString str);
 
     ~dataThread();
 
@@ -53,7 +54,7 @@ public:
 
 public slots:
 
-    void recordData();
+    void setNames();
 
 
 protected:

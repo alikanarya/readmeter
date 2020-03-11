@@ -57,8 +57,8 @@ void netOps::downloadFinished(QNetworkReply *reply) {
             }
 
             if (temp->save(webDir + "ngmeter.jpeg")) {
-                if (dockerHostLive) {
-                    requestMode = 2;    //6;
+                if (analyseActive) {
+                    requestMode = 8;    //6;
                     makeRequest(requestMode);
                 } else {
                     dataX->closeLogFile();
@@ -71,6 +71,10 @@ void netOps::downloadFinished(QNetworkReply *reply) {
 
         } else if (_requestMode==7){
             localWebServerRunning = true;
+        } else if (_requestMode==8){
+            //dataX->insertToDB(QString::fromUtf8(datagram).toUtf8().constData().insert(datagramSize-1,"."));
+            dataX->insertToDB(QString::fromUtf8(datagram).toUtf8().insert(datagramSize-1,"."));
+            qApp->quit();
         } else {
             cout << " data: " << QString::fromUtf8(datagram).toUtf8().constData() << endl;
             dockerRunning = true;

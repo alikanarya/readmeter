@@ -20,8 +20,8 @@ QString dbUser = "ali";
 QString dbPass = "reyhan";
 dataThread *dataX;
 bool firstRun = true;
-const int RequestUrlSize = 8;
-QString RequestUrl[8] = {
+const int RequestUrlSize = 9;
+QString RequestUrl[9] = {
     /*0*/   "http://192.168.2.49/capture_with_flashlight",
     /*1*/   "http://192.168.2.49/capture",
     /*2*/   "http://192.168.2.11:3000/wasserzaehler.html?url=http://192.168.2.48:8080/ngmeter.jpeg&single",
@@ -29,7 +29,8 @@ QString RequestUrl[8] = {
     /*4*/   "http://192.168.2.11:3000/wasserzaehler.html?url=http://192.168.2.49/capture&single",
     /*5*/   "http://192.168.2.10/meter/capture.jpg",
     /*6*/   "http://192.168.2.11:3000/wasserzaehler.html?url=http://192.168.2.10/meter/capture.jpg&single",
-    /*7*/   "http://192.168.2.48"
+    /*7*/   "http://192.168.2.46:8080/ngmeter.jpeg",
+    /*8*/   "http://192.168.2.46:8000/analyse.html?url=http://192.168.2.48:8080/ngmeter.jpeg"
     };
 QString webDir = "/var/www/html/";
 QString webUrl = "http://192.168.2.48:8080/";
@@ -41,6 +42,7 @@ bool dockerHostLive = false;
 bool camNgLive = false;
 bool dockerRunning = false;
 bool localWebServerRunning = false;
+bool analyseActive = true;
 
 int main(int argc, char *argv[]) {
 
@@ -49,7 +51,7 @@ int main(int argc, char *argv[]) {
 
     if (argc == 1){
 
-        requestMode = 0;//5
+        requestMode = 5;//0;//5
 
     } else if (argc == 2){
 
@@ -73,16 +75,17 @@ int main(int argc, char *argv[]) {
     };
 
     dataX = new dataThread();
-    dataX->dbRecordEnable = false;
+    dataX->dbRecordEnable = true;
     if (dataX->dbRecordEnable)
         dataX->connectToDB();
-    dataX->recordData();
+    dataX->setNames();
 
     netOps _net("");
     std::cout << std::boolalpha;
     //dockerHostLive = _net.checkHost(ipDockerHost);
     //cout << "DockerHost: " << dockerHostLive << "\n";
 
+    // net request is asynchronous, will be visited later
     //_net.makeRequest(7);    //check local web server is runnning
     //cout << "WebServer: " << localWebServerRunning << "\n";
 

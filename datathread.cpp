@@ -136,7 +136,7 @@ void dataThread::run(){
     //stopped = false;
 
     if (cmdRecordData) {
-        recordData();
+        setNames();
         cmdRecordData = false;
     }
 
@@ -147,7 +147,7 @@ void dataThread::stop(){
     stopped = true;
 }
 
-void dataThread::recordData(){
+void dataThread::setNames(){
 
     time (&currentTime);
     currentTimeInfo = localtime (&currentTime);
@@ -196,5 +196,32 @@ void dataThread::recordData(){
     }
 */
     firstRun = false;
+}
+
+void dataThread::insertToDB(QString str){
+
+    if (db.open()) {
+        bool ok;
+        str.toFloat(&ok);
+        //qDebug() << "float? " << ok;
+        if (!ok)
+            str = "0";
+        QString qryStr = "";
+        qryStr = QString( "INSERT INTO gas_reading2 (date, time, value) VALUES ('%1', '%2', %3)").arg(dateInfo).arg(timeInfo).arg(str);
+        //qryStr = QString( "INSERT INTO gas_reading (date, time, value, note) VALUES ('%1', '%2', %3, '%4')").arg(date).arg(time).arg(result).arg(FIXED);
+
+        //qDebug() << qryStr.toUtf8().constData();
+
+        QSqlQuery qry;
+        qry.prepare( qryStr );
+
+        if( !qry.exec() ){
+            qDebug() << qry.lastError().type();
+            qDebug() << qry.lastError().databaseText();
+        }
+        else {
+            qDebug( "Inserted!" );
+        }
+    }
 }
 

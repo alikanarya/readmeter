@@ -37,6 +37,7 @@ extern bool dockerHostLive;
 extern bool camNgLive;
 extern bool dockerRunning;
 extern bool localWebServerRunning;
+extern bool analyseActive;
 
 class netOps : public QObject
 {
