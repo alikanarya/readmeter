@@ -23,3 +23,6 @@ SOURCES += main.cpp \
 HEADERS += \
     netops.h \
     datathread.h
+
+DISTFILES += \
+    readmeter.ini
