@@ -6,16 +6,17 @@ netOps::netOps(QObject *parent) : QObject(parent)
 }
 
 netOps::netOps (QString _url) {
+    urlOCR = urlOCREngine + urlOCRSource;
     url.setUrl(_url);
     Q_ASSERT(&manager);
     connect(&manager, SIGNAL(finished(QNetworkReply*)),this,SLOT(downloadFinished(QNetworkReply*)));
 }
 
-netOps::~netOps() { qDebug() << " done " << endl; }
+netOps::~netOps() { /*qDebug() << " done " << endl;*/ }
 
-void netOps::makeRequest(unsigned int id) {
+void netOps::makeRequest(QString _url, unsigned int id) {
     requestMode = id;
-    url.setUrl(RequestUrl[id]);
+    url.setUrl(_url);
     QNetworkRequest request(url);
     request.setRawHeader("RequestID", QString::number(id).toUtf8());
     manager.get(request);
@@ -24,16 +25,15 @@ void netOps::makeRequest(unsigned int id) {
 void netOps::downloadFinished(QNetworkReply *reply) {
 
     if (reply->error()) {
-        cout << " Error: downloadFinished() " << reply->errorString().constData() << endl;
-        if (requestMode==2 || requestMode==3 || requestMode==4 || requestMode==6) {
-            dockerRunning = false;
-            cout << "Docker: " << dockerRunning << "\n";
+        cout << " Network Reply Error: " << reply->errorString().constData() << endl;
+        if ( requestMode == RQ_OCR ) {
+            ocrEngineRunning = false;
+            cout << "OCR: " << ocrEngineRunning << "\n";
+            dataX->append2Log("OCR Engine down");
             dataX->closeLogFile();
             qApp->quit();
         }
-        if (requestMode==7) {
-             localWebServerRunning = false;
-        }
+        //if (requestMode==7) { localWebServerRunning = false; }
     } else {
 
         QByteArray datagram; datagram.clear();
@@ -45,7 +45,8 @@ void netOps::downloadFinished(QNetworkReply *reply) {
         int _requestMode = reply->request().rawHeader(RequestID).toInt();
         //cout << reply->request().rawHeader(RequestID).constData() << endl;
 
-        if (_requestMode==0 || _requestMode==1 || _requestMode==5) {
+        if ( _requestMode == RQ_CAM_CAPTURE ) {
+
             QImage *temp = new QImage;
             temp->loadFromData(datagram);
 
@@ -58,8 +59,7 @@ void netOps::downloadFinished(QNetworkReply *reply) {
 
             if (temp->save(webDir + "ngmeter.jpeg")) {
                 if (analyseActive) {
-                    requestMode = 8;    //6;
-                    makeRequest(requestMode);
+                    makeRequest(urlOCR, RQ_OCR);
                 } else {
                     dataX->closeLogFile();
                     qApp->quit();
@@ -69,16 +69,17 @@ void netOps::downloadFinished(QNetworkReply *reply) {
                 qApp->quit();
             }
 
-        } else if (_requestMode==7){
-            localWebServerRunning = true;
-        } else if (_requestMode==8){
-            //dataX->insertToDB(QString::fromUtf8(datagram).toUtf8().constData().insert(datagramSize-1,"."));
-            dataX->insertToDB(QString::fromUtf8(datagram).toUtf8().insert(datagramSize-1,"."));
-            qApp->quit();
-        } else {
+        } else if ( _requestMode == RQ_OCR ){
             cout << " data: " << QString::fromUtf8(datagram).toUtf8().constData() << endl;
-            dockerRunning = true;
-            cout << "Docker: " << dockerRunning << "\n";
+            ocrEngineRunning = true;
+            cout << "OCR: " << ocrEngineRunning << "\n";
+            if (dataX->dbRecordEnable)
+                dataX->insertToDB(QString::fromUtf8(datagram).toUtf8().insert(datagramSize-1,"."));
+            dataX->closeLogFile();
+            qApp->quit();
+        //} else if (_requestMode==7){ localWebServerRunning = true;
+        } else {
+            cout << "Unknown request data: " << QString::fromUtf8(datagram).toUtf8().constData() << endl;
             dataX->closeLogFile();
             qApp->quit();
         }
@@ -102,6 +103,7 @@ void netOps::downloadFinished(QNetworkReply *reply) {
 }
 
 bool netOps::checkHost(QString ip){
+
     QProcess pingProcess;
     QString exec = "ping";
     QStringList params;

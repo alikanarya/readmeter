@@ -2,6 +2,8 @@
 #define NETOPS_H
 
 #define RequestID   "RequestID"
+#define RQ_CAM_CAPTURE  0       // capturing image from cam (or a web server)
+#define RQ_OCR          1       // ocr analising of the image
 
 #include <QObject>
 #include <QNetworkAccessManager>
@@ -21,21 +23,20 @@
 using namespace std;
 
 extern dataThread *dataX;
+extern QString urlOCREngine;
+extern QString urlOCRSource;
 
 extern QString urlCapWithFlash;
 extern QString urlCapWithOutFlash;
-extern QString RequestUrl[];
 extern QString webDir;
-extern QString webUrl;
 extern char dirName[];
 extern char dirName1[];
 extern char dirName2[];
 extern char dirNameF[];
 extern char fileName[];
 extern char fileNameBare[];
-extern bool dockerHostLive;
 extern bool camNgLive;
-extern bool dockerRunning;
+extern bool ocrEngineRunning;
 extern bool localWebServerRunning;
 extern bool analyseActive;
 
@@ -46,12 +47,13 @@ class netOps : public QObject
 
 public:
     QUrl url;
+    QString urlOCR = "";
     int requestMode = 0;
 
     explicit netOps(QObject *parent = 0);
     netOps(QString _url);
     ~netOps();
-    void makeRequest(unsigned int id);
+    void makeRequest(QString _url, unsigned int id);
     bool checkHost(QString ip);
 
 signals:

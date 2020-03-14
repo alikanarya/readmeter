@@ -7,6 +7,7 @@ extern QString hostName;
 extern QString dbName;
 extern QString dbUser;
 extern QString dbPass;
+extern QString tableName;
 extern bool firstRun;
 
 time_t firstTime, prevTime, currentTime;
@@ -78,6 +79,7 @@ void dataThread::connectToDB(){
 
     if (!db.open()) {
 
+        append2Log("can not connected to db");
         qDebug() <<  db.lastError().text();
 
     } else {
@@ -85,41 +87,12 @@ void dataThread::connectToDB(){
         qDebug() <<  "db connection established";
         dbConnectionOK = true;
         emit dbConnected();
-/*
-        QSqlQuery qry;
-        QString cmd;
-
-        cmd = QString( "INSERT INTO %1 (date, time, oto, sln, blk, mut, eyo, cyo, yod) VALUES ('%2', '%3', '*', '*', '*', '*', '*', '*', '*')").arg(tableNames[0]).arg(dateInfo).arg(timeInfo);
-
-        qry.prepare( cmd );
-
-        if( !qry.exec() )   qDebug() << qry.lastError();
-*/
-/*
-        for (int i = 0; i < gpioX->dInpNum; i++) {
-
-            cmd = QString( "INSERT INTO %1 (date, time, state) VALUES ('%2', '%3', '*')" ).arg(tableNames[i+1]).arg(dateInfo).arg(timeInfo);
-
-            qry.prepare( cmd );
-
-            if( !qry.exec() )   qDebug() << qry.lastError();
-
-        }
-*/
-/*
-        cmd = QString( "INSERT INTO %1 (date, time, temp) VALUES ('%2', '%3', -99)" ).arg(tableNames[8]).arg(dateInfo).arg(timeInfo);
-        //qDebug() << cmd.toUtf8().constData();
-
-        qry.prepare( cmd );
-
-        if( !qry.exec() )   qDebug() << qry.lastError();
-*/
     }
 }
 
 void dataThread::append2Log(QString str){
     if (logFile.is_open()){
-        logFile << str.toUtf8().constData() << endl;
+        logFile << dateInfo << " " << timeInfo << " " << str.toUtf8().constData() << endl;
     }
 }
 
@@ -157,44 +130,9 @@ void dataThread::setNames(){
     timeString();
 
     //cout << line;
-    qDebug() << dateInfo << " " << timeInfo << endl;
-    qDebug() << dirName << " " << fileName << endl;
+    qDebug() << dateInfo << " " << timeInfo;
+    qDebug() << dirName << " " << fileName;
 
-    //cout << gpioX->aInpArr[0] << " " << gpioX->aInpArr[1] << " " << gpioDS18B20X->sensor1val;
-
-/*
-    if (dbRecordEnable && db.open()) {
-
-        QSqlQuery qry;
-        QString cmd;
-
-
-//        cmd = QString( "INSERT INTO %1 (date, time, oto, sln, blk, mut, eyo, cyo, yod) VALUES ('%2', '%3', %4, %5, %6, %7, %8, %9, %10)").arg(tableNames[0]).arg(dateInfo).arg(timeInfo).arg(gpioX->dInpArr[0]).arg(gpioX->dInpArr[1]).arg(gpioX->dInpArr[2]).arg(gpioX->dInpArr[3]).arg(gpioX->dInpArr[4]).arg(gpioX->dInpArr[5]).arg(gpioX->dInpArr[6]);
-        //qDebug() << cmd.toUtf8().constData();
-
-        qry.prepare( cmd );
-
-        if( !qry.exec() )
-          qDebug() << qry.lastError();
-
-
-        for (int i = 0; i < gpioX->dInpNum; i++) {
-
-            if ( (gpioX->dInpArr[i] != gpioX->dInpArrPrev[i]) || firstRun ) {
-
-                cmd = QString( "INSERT INTO %1 (date, time, state) VALUES ('%2', '%3', %4)").arg(tableNames[i+1]).arg(dateInfo).arg(timeInfo).arg(gpioX->dInpArr[i]);
-                //qDebug() << cmd.toUtf8().constData();
-
-                qry.prepare( cmd );
-
-                if( !qry.exec() )
-                  qDebug() << qry.lastError();
-            }
-        }
-
-
-    }
-*/
     firstRun = false;
 }
 
@@ -207,7 +145,7 @@ void dataThread::insertToDB(QString str){
         if (!ok)
             str = "0";
         QString qryStr = "";
-        qryStr = QString( "INSERT INTO gas_reading2 (date, time, value) VALUES ('%1', '%2', %3)").arg(dateInfo).arg(timeInfo).arg(str);
+        qryStr = QString( "INSERT INTO %1 (date, time, value) VALUES ('%2', '%3', %4)").arg(tableName).arg(dateInfo).arg(timeInfo).arg(str);
         //qryStr = QString( "INSERT INTO gas_reading (date, time, value, note) VALUES ('%1', '%2', %3, '%4')").arg(date).arg(time).arg(result).arg(FIXED);
 
         //qDebug() << qryStr.toUtf8().constData();
@@ -216,12 +154,15 @@ void dataThread::insertToDB(QString str){
         qry.prepare( qryStr );
 
         if( !qry.exec() ){
+            append2Log("can not insterted to db");
             qDebug() << qry.lastError().type();
             qDebug() << qry.lastError().databaseText();
         }
         else {
             qDebug( "Inserted!" );
         }
+    } else {
+        append2Log("not connected to db");
     }
 }
 
