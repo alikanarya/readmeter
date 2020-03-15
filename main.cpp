@@ -122,6 +122,7 @@ int main(int argc, char *argv[]) {
 
         settings = new QSettings(INIFILENAME, QSettings::IniFormat);
         readSettings();
+        _net.urlOCR = urlOCREngine + urlOCRSource;
 
         dataX = new dataThread();
         dataX->dbRecordEnable = _dbRecordEnable;
