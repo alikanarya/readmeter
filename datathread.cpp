@@ -33,10 +33,10 @@ void timeString(){
     sprintf (dateInfo, "%02d/%02d/%02d", currentTimeInfo->tm_mday, (currentTimeInfo->tm_mon+1), (currentTimeInfo->tm_year-100));
     sprintf (timeInfo, "%02d:%02d:%02d", currentTimeInfo->tm_hour, currentTimeInfo->tm_min, currentTimeInfo->tm_sec);
     sprintf (dirName, "%04d%02d%02d", (currentTimeInfo->tm_year+1900), (currentTimeInfo->tm_mon+1), currentTimeInfo->tm_mday);
-//    sprintf (dirNameF, "/root/ngmeter-data/%04d%02d%02d", (currentTimeInfo->tm_year+1900), (currentTimeInfo->tm_mon+1), currentTimeInfo->tm_mday);
-    sprintf (dirName1, "/root/ngmeter-data");
-    sprintf (dirName2, "/root/ngmeter-data/%04d-%02d", (currentTimeInfo->tm_year+1900), (currentTimeInfo->tm_mon+1));
-    sprintf (dirNameF, "/root/ngmeter-data/%04d-%02d/%02d", (currentTimeInfo->tm_year+1900), (currentTimeInfo->tm_mon+1), currentTimeInfo->tm_mday);
+//    sprintf (dirNameF, "/ngmeter-data/%04d%02d%02d", (currentTimeInfo->tm_year+1900), (currentTimeInfo->tm_mon+1), currentTimeInfo->tm_mday);
+    sprintf (dirName1, "/ngmeter-data");
+    sprintf (dirName2, "/ngmeter-data/%04d-%02d", (currentTimeInfo->tm_year+1900), (currentTimeInfo->tm_mon+1));
+    sprintf (dirNameF, "/ngmeter-data/%04d-%02d/%02d", (currentTimeInfo->tm_year+1900), (currentTimeInfo->tm_mon+1), currentTimeInfo->tm_mday);
     sprintf (fileName, "%s/%s_%02d%02d%02d.jpeg", dirNameF, dirName, currentTimeInfo->tm_hour, currentTimeInfo->tm_min, currentTimeInfo->tm_sec);
     sprintf (fileNameBare, "%s_%02d%02d%02d.jpeg", dirName, currentTimeInfo->tm_hour, currentTimeInfo->tm_min, currentTimeInfo->tm_sec);
 }
