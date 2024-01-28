@@ -141,11 +141,12 @@ void dataThread::insertToDB(QString str){
     if (db.open()) {
         bool ok;
         str.toFloat(&ok);
+        QString _ocr = str;
         //qDebug() << "float? " << ok;
         if (!ok)
             str = "0";
         QString qryStr = "";
-        qryStr = QString( "INSERT INTO %1 (date, time, value, ocr) VALUES ('%2', '%3', %4, %5)").arg(tableName).arg(dateInfo).arg(timeInfo).arg(str).arg(str);
+        qryStr = QString( "INSERT INTO %1 (date, time, value, ocr) VALUES ('%2', '%3', %4, '%5')").arg(tableName).arg(dateInfo).arg(timeInfo).arg(str).arg(_ocr);
         //qryStr = QString( "INSERT INTO gas_reading (date, time, value, note) VALUES ('%1', '%2', %3, '%4')").arg(date).arg(time).arg(result).arg(FIXED);
 
         //qDebug() << qryStr.toUtf8().constData();
